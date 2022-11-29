@@ -1,8 +1,10 @@
 # ecs
 
+A Nim-Proteus library.
+
 ## Entity Component System
 
-The extremum library contains a set of classes that can be used to 
+The ecs library contains a set of classes that can be used to 
 implement a generic Entity Component System. 
 
 Given a Physics simulation, you might expect the following:
