@@ -27,22 +27,12 @@ method register*(this: System, c: Component) {.base.} = discard
 method unregister*(this: System, component: Component) {.base.} = discard
 method update(this: System) {.base.} = discard
 
-proc update*(this: Ecs) = 
-    for i, s in pairs(this.systems):
-        s.update()
-
-proc register*(this: Ecs, system: System) = 
-    system.id = (len(this.systems) + 1).SystemId
-    this.systems[system.id] = system
-
-proc unregister*(this: Ecs, system: System) = 
-    this.systems.del(system.id)
-
 proc register*(this: Ecs, entity: Entity, component: Component) = 
     var entity = this.entities[entity.id]
     component.id = (len(this.components) + 1).ComponentId
     entity.components[component.id] = component
     this.components[component.id] = component
+    component.entityId = entity.id
     for i,s in pairs(this.systems):
         s.register(component)
 
@@ -51,6 +41,7 @@ proc unregister*(this: Ecs, entity: Entity, component: Component) =
         s.unregister(component)
     entity.components.del(component.id)
     this.components.del(component.id)
+    component.entityId = 0
 
 proc register*(this: Ecs, entity: Entity) =
     entity.id = (len(this.entities) + 1).EntityId
@@ -78,6 +69,8 @@ proc getId*(this: System): SystemId = this.id
 
 proc getEcs*(this: System): Ecs = this.ecs
 
+proc setEcs*(this: System, ecs: Ecs) = this.ecs = ecs
+
 proc getId*(this: Entity): EntityId = this.id
 
 proc getId*(this: Component): ComponentId = this.id
@@ -92,4 +85,15 @@ proc newEcs*(): Ecs =
     result.entities = newTable[EntityId, Entity]()
     result.systems = newTable[SystemId, System]()
 
+proc update*(this: Ecs) = 
+    for i, s in pairs(this.systems):
+        s.update()
+
+proc register*(this: Ecs, system: System) = 
+    system.id = (len(this.systems) + 1).SystemId
+    this.systems[system.id] = system
+    system.setEcs(this)
+
+proc unregister*(this: Ecs, system: System) = 
+    this.systems.del(system.id)
 

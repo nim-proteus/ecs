@@ -1,23 +1,11 @@
-# ecs
-
-A Nim-Proteus library.
-
-## Entity Component System
-
-The ecs library contains a set of classes that can be used to 
-implement a generic Entity Component System. 
-
-Given a Physics simulation, you might expect the following:
- - A component `HasLocation` to track the current location
- - A component `HasAcceleration` to track current velocity
- - A system `Acceleration` to update the location of the Entity based on the velocity
-
-```nim
+import unittest
 import ecs
 import std/tables
-import glm
 
 type
+    Vec3f = object
+        x, y, z: float32
+
     HasLocation = ref object of Component
         loc: Vec3f
 
@@ -26,6 +14,18 @@ type
 
     Acceleration = ref object of System
         components: seq[HasAcceleration]
+
+proc `*`(a, b: Vec3f): Vec3f =
+    result = Vec3f(x: a.x * b.x, y: a.y * b.y, z: a.z * b.z)
+
+proc `*`(a: Vec3f, b: float32): Vec3f =
+    result = Vec3f(x: a.x * b, y: a.y * b, z: a.z * b)
+
+proc `+`(a, b: Vec3f): Vec3f =
+    result = Vec3f(x: a.x + b.x, y: a.y + b.y, z: a.z + b.z)
+
+proc vec3f(x, y, z: float32): Vec3f =
+    result = Vec3f(x: x, y: y, z: z)
 
 proc newHasLocation(loc: Vec3f): HasLocation =
     result = new(HasLocation)
@@ -49,7 +49,7 @@ method update(this: Acceleration) =
         var l = this.getEcs().getComponent[:HasLocation](c.entityId)
         l.loc = l.loc + (c.accel * elapsed)
 
-when isMainModule:
+test "new ecs":
     # Create an ecs and register an acceleration system
     var e = newEcs()
     e.register(newAcceleration())
@@ -65,5 +65,4 @@ when isMainModule:
 
     # And the location should be updated
     var c = e.getComponent[:HasLocation](t.getId())
-    echo c.loc.y == 0.5f
-```
+    check c.loc.y == 0.5f
