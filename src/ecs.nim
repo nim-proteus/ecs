@@ -92,10 +92,11 @@ proc update*(this: Ecs) =
     for i, s in pairs(this.systems):
         s.update()
 
-proc register*(this: Ecs, system: System) = 
-    system.id = (len(this.systems) + 1).SystemId
-    this.systems[system.id] = system
-    system.setEcs(this)
+proc register*(this: Ecs, systems: varargs[System]) = 
+    for system in systems:
+        system.id = (len(this.systems) + 1).SystemId
+        this.systems[system.id] = system
+        system.setEcs(this)
 
 proc unregister*(this: Ecs, system: System) = 
     this.systems.del(system.id)
