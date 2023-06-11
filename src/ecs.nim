@@ -27,8 +27,8 @@ method register*(this: System, c: Component) {.base.} = discard
 method unregister*(this: System, component: Component) {.base.} = discard
 method update(this: System) {.base.} = discard
 
-proc register*(this: Ecs, entity: Entity, component: Component) = 
-    var entity = this.entities[entity.id]
+proc register*(this: Ecs, entityId: EntityId, component: Component) = 
+    var entity = this.entities[entityId]
     component.id = (len(this.components) + 1).ComponentId
     entity.components[component.id] = component
     this.components[component.id] = component
@@ -36,9 +36,10 @@ proc register*(this: Ecs, entity: Entity, component: Component) =
     for i,s in pairs(this.systems):
         s.register(component)
 
-proc unregister*(this: Ecs, entity: Entity, component: Component) = 
+proc unregister*(this: Ecs, entityId: EntityId, component: Component) = 
     for i,s in pairs(this.systems):
         s.unregister(component)
+    var entity = this.entities[entityId]
     entity.components.del(component.id)
     this.components.del(component.id)
     component.entityId = 0
@@ -52,7 +53,7 @@ proc register*(this: Ecs, entity: Entity, components: varargs[Component]) =
 proc unregister*(this: Ecs, entity: Entity) = 
     var e = this.entities[entity.id]
     for i,c in pairs(e.components):
-        this.unregister(e, c)
+        this.unregister(e.id, c)
     this.entities.del(entity.id)
 
 proc getComponent*[T: Component](this: Ecs, entityId: EntityId): T =
