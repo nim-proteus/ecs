@@ -48,7 +48,7 @@ proc register*(this: Ecs, entity: Entity, components: varargs[Component]) =
     entity.id = (len(this.entities) + 1).EntityId
     this.entities[entity.id] = entity
     for c in components:
-        this.register(entity, c)
+        this.register(entity.id, c)
 
 proc unregister*(this: Ecs, entity: Entity) = 
     var e = this.entities[entity.id]
