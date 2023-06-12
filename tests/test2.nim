@@ -56,9 +56,9 @@ test "new ecs":
 
     # Create an entity and give it a location and acceleration
     var t = newEntity()
-    e.register(t)
-    e.register(t, newHasLocation(vec3f(0, 0, 0)))
-    e.register(t, newHasAcceleration(vec3f(0, 5, 0)))
+    discard e.register(t)
+    discard e.register(t, newHasLocation(vec3f(0, 0, 0)))
+    discard e.register(t, newHasAcceleration(vec3f(0, 5, 0)))
     
     # One tick of the entire ecs
     e.update()

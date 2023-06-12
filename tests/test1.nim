@@ -22,7 +22,7 @@ test "ecs register system":
 test "ecs register entity":
     var e = newEcs()
     var t = newEntity()
-    e.register(t)
+    discard e.register(t)
     check t.getId() == 1
     check e.entities[t.getId()] == t
     check len(e.entities) == 1
@@ -33,8 +33,8 @@ test "ecs register component":
     var e = newEcs()
     var t = newEntity()
     var c = Component()
-    e.register(t)
-    e.register(t, c)
+    discard e.register(t)
+    discard e.register(t, c)
     check c.getId() == 1
     check e.components[c.getId()] == c
     # check len(e.components) == 1
